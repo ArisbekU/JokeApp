@@ -1,6 +1,7 @@
 package com.example.jokeapp
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -10,12 +11,10 @@ import data.JokeAdapter
 
 class MainActivity : AppCompatActivity() {
 
-    @SuppressLint("MissingInflatedId")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
 
         // Список шуток
         val jokes = listOf(
@@ -28,7 +27,15 @@ class MainActivity : AppCompatActivity() {
             Joke("Футболисты", "Почему футболист боится пустого холодильника?", "Потому что это напоминает ему о пустых воротах")
         )
 
+        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = JokeAdapter(jokes)
+        recyclerView.adapter = JokeAdapter(jokes) { joke ->
+            val intent = Intent(this, JokeDetail::class.java).apply {
+                putExtra("category", joke.category)
+                putExtra("question", joke.question)
+                putExtra("answer", joke.answer)
+            }
+            startActivity(intent)
+        }
     }
 }

@@ -6,11 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.jokeapp.R
 
 
-class JokeAdapter(private val jokes: List<Joke>) : RecyclerView.Adapter<JokeViewHolder>() {
+class JokeAdapter(private val jokes: List<Joke>, private val onJokeClick: (Joke) -> Unit) : RecyclerView.Adapter<JokeViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JokeViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_joke, parent, false)
-        return JokeViewHolder(view)
+        return JokeViewHolder(view, onJokeClick)
     }
 
     override fun onBindViewHolder(holder: JokeViewHolder, position: Int) {
@@ -18,6 +18,7 @@ class JokeAdapter(private val jokes: List<Joke>) : RecyclerView.Adapter<JokeView
         holder.categoryTextView.text = joke.category
         holder.questionTextView.text = joke.question
         holder.answerTextView.text = joke.answer
+        holder.bind(joke)
     }
     override fun getItemCount(): Int = jokes.size
 }
