@@ -10,5 +10,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="4"
+        tools:layout_editor_absoluteX="9dp"
+        tools:layout_editor_absoluteY="16dp"
+        tools:listitem="@layout/item_joke" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,23 +2,22 @@ package data
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
-import com.example.jokeapp.R
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import com.example.jokeapp.databinding.ItemJokeBinding
+import data.util.JokeDiffUtilCallback
 
 
-class JokeAdapter(private val jokes: List<Joke>, private val onJokeClick: (Joke) -> Unit) : RecyclerView.Adapter<JokeViewHolder>() {
+class JokeAdapter(private val onClick: (Joke) -> Unit) :
+    ListAdapter<Joke, JokeViewHolder>(JokeDiffUtilCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JokeViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_joke, parent, false)
-        return JokeViewHolder(view, onJokeClick)
+        val binding = ItemJokeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return JokeViewHolder(binding, onClick)
     }
 
     override fun onBindViewHolder(holder: JokeViewHolder, position: Int) {
-        val joke = jokes[position]
-        holder.categoryTextView.text = joke.category
-        holder.questionTextView.text = joke.question
-        holder.answerTextView.text = joke.answer
-        holder.bind(joke)
+        holder.bind(getItem(position))
     }
-    override fun getItemCount(): Int = jokes.size
+
 }
