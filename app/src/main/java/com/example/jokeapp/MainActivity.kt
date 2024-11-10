@@ -8,34 +8,34 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.jokeapp.databinding.ActivityMainBinding
 import data.Joke
 import data.JokeAdapter
+import com.example.jokeapp.R
+import com.example.jokeapp.fragments.JokeDetailFragment
+import com.example.jokeapp.fragments.JokeListFragment
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : AppCompatActivity(), JokeListFragment.JokeListListener {
+
     private lateinit var binding: ActivityMainBinding
-    private val viewModel: MainActivityViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val adapter = JokeAdapter { joke ->
-            openJokeDetail(joke)
-        }
 
-        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.adapter = adapter
-
-        viewModel.jokes.observe(this) { jokes ->
-            // Обновление данных в адаптере
-            adapter.submitList(jokes)
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, JokeListFragment())
+                .commit()
         }
     }
-    private fun openJokeDetail(joke: Joke) {
 
-        val intent = Intent(this, JokeDetail::class.java).apply {
-            putExtra(JokeDetail.ARG_CATEGORY, joke.category)
-            putExtra(JokeDetail.ARG_QUESTION, joke.question)
-            putExtra(JokeDetail.ARG_ANSWER, joke.answer)
-        }
-        startActivity(intent)
+
+    override fun onJokeSelected(joke: Joke) {
+        val detailFragment = JokeDetailFragment.newInstance(joke)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, detailFragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
