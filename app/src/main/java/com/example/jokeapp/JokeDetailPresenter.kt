@@ -3,15 +3,14 @@ package com.example.jokeapp
 import data.Joke
 
 class JokeDetailPresenter(private val view: JokeDetailView){
-    fun setJokeDetails(joke: Joke?) {
-        // Проверяем, если объект joke равен null
-        if (joke == null) {
-            view.showErrorAndClosedInfo("Error: No joke details provided.")
-            return
-        }
+    fun setJokeDetails(category: String?, question: String?, answer: String?) {
 
-        // Передаем объект joke в View
-        view.showJokeInfo(joke)
+        if (category.isNullOrBlank() || question.isNullOrBlank() || answer.isNullOrBlank()) {
+            view.showError("Invalid joke data")
+        } else {
+            val joke = Joke(category, question, answer)
+            view.showJokeDetails(joke)
+        }
     }
 }
 

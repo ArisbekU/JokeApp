@@ -17,9 +17,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val adapter = JokeAdapter { joke ->
-            openJokeDetail(joke)
-        }
+        val adapter = JokeAdapter { joke -> openJokeDetail(joke) }
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         binding.recyclerView.adapter = adapter

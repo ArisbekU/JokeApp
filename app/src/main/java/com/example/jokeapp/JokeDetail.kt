@@ -24,19 +24,17 @@ class JokeDetail : AppCompatActivity(), JokeDetailView {
         binding = ActivityJokeDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         presenter = JokeDetailPresenter(this)
+
         val category = intent.getStringExtra(ARG_CATEGORY) ?: "No category"
         val question = intent.getStringExtra(ARG_QUESTION) ?: "No question"
         val answer = intent.getStringExtra(ARG_ANSWER) ?: "No answer"
-        val joke = Joke(category, question, answer)
-        showJokeInfo(joke)
+        presenter.setJokeDetails(category, question, answer)
+        //val joke = Joke(category, question, answer)
+        //showJokeInfo(joke)
 
     }
 
-    private fun handleExtra() {
-
-    }
-
-    override fun showJokeInfo(joke: Joke) {
+    override fun showJokeDetails(joke: Joke) {
         with(binding){
             categoryDetails.text = joke.category
             questionDetails.text = joke.question
@@ -44,7 +42,7 @@ class JokeDetail : AppCompatActivity(), JokeDetailView {
         }
     }
 
-    override fun showErrorAndClosedInfo(errorMessage: String) {
+    override fun showError(errorMessage: String) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
         finish()
     }
