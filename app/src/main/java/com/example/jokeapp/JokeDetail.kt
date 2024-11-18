@@ -35,11 +35,11 @@ class JokeDetail : AppCompatActivity(), JokeDetailView {
     }
 
     override fun showJokeDetails(joke: Joke) {
-        with(binding){
-            categoryDetails.text = joke.category
-            questionDetails.text = joke.question
-            answerDetails.text = joke.answer
-        }
+//        with(binding){
+//            categoryDetails.text = joke.category
+//            questionDetails.text = joke.question
+//            answerDetails.text = joke.answer
+//        }
     }
 
     override fun showError(errorMessage: String) {

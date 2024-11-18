@@ -1,23 +1,25 @@
 package data
 
-import android.view.LayoutInflater
+
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.example.jokeapp.databinding.ItemJokeBinding
-import data.util.JokeDiffUtilCallback
 
 
-class JokeAdapter(private val onClick: (Joke) -> Unit) :
-    ListAdapter<Joke, JokeViewHolder>(JokeDiffUtilCallback()) {
+
+class JokeAdapter : ListAdapter<Joke, JokeViewHolder>(JokeDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JokeViewHolder {
-        val binding = ItemJokeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return JokeViewHolder(binding, onClick)
+        return JokeViewHolder.from(parent)
     }
 
     override fun onBindViewHolder(holder: JokeViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val joke = getItem(position)
+        holder.bind(joke)
     }
 
+    class JokeDiffCallback : DiffUtil.ItemCallback<Joke>() {
+        override fun areItemsTheSame(oldItem: Joke, newItem: Joke): Boolean = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: Joke, newItem: Joke): Boolean = oldItem == newItem
+    }
 }
