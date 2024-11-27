@@ -1,27 +1,49 @@
 package com.example.jokeapp
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.widget.Toast
 
-class JokeDetail : AppCompatActivity() {
+import androidx.appcompat.app.AppCompatActivity
+import com.example.jokeapp.databinding.ActivityJokeDetailBinding
+import data.Joke
+import kotlin.jvm.Throws
+
+class JokeDetail : AppCompatActivity(), JokeDetailView {
+    private lateinit var binding: ActivityJokeDetailBinding
+    private lateinit var presenter: JokeDetailPresenter
+
+    companion object{
+        const val ARG_CATEGORY = "JokeDetail.ARG_CATEGORY"
+        const val ARG_QUESTION = "JokeDetail.ARG_QUESTION"
+        const val ARG_ANSWER = "JokeDetail.ARG_ANSWER"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_joke_detail)
+        binding = ActivityJokeDetailBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        presenter = JokeDetailPresenter(this)
 
-        // Получаем данные из Intent
-        val category = intent.getStringExtra("category")
-        val question = intent.getStringExtra("question")
-        val answer = intent.getStringExtra("answer")
-
-        // Устанавливаем данные в TextView
-        findViewById<TextView>(R.id.categoryDetails).text = category
-        findViewById<TextView>(R.id.questionDetails).text = question
-        findViewById<TextView>(R.id.answerDetails).text = answer
+        val category = intent.getStringExtra(ARG_CATEGORY) ?: "No category"
+        val question = intent.getStringExtra(ARG_QUESTION) ?: "No question"
+        val answer = intent.getStringExtra(ARG_ANSWER) ?: "No answer"
+        presenter.setJokeDetails(category, question, answer)
+        //val joke = Joke(category, question, answer)
+        //showJokeInfo(joke)
 
     }
 
+    override fun showJokeDetails(joke: Joke) {
+        with(binding){
+            categoryDetails.text = joke.category
+            questionDetails.text = joke.question
+            answerDetails.text = joke.answer
+        }
+    }
+
+    override fun showError(errorMessage: String) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+        finish()
+    }
 }
