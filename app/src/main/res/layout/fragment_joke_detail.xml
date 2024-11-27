@@ -1,35 +1,34 @@
-<!-- activity_joke_detail.xml -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:padding="16dp">
+    >
 
     <TextView
         android:id="@+id/categoryDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
         android:textStyle="bold"
-        tools:text = "категория"
-        android:textSize="18sp"/>
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp"
+        tools:text="Category" />
 
     <TextView
         android:id="@+id/questionDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:textSize="16sp"
-        tools:text = "вопрос"
-        android:textColor="@android:color/black"/>
+        android:textSize="14sp"
+        android:layout_marginBottom="4dp"
+        android:textColor="@android:color/black"
+        tools:text="Question" />
 
     <TextView
         android:id="@+id/answerDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:textSize="16sp"
-        tools:text = "ответ"
+        tools:text="Answer"
+        android:textSize="14sp"
         android:textColor="@android:color/darker_gray"/>
 </LinearLayout>
