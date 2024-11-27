@@ -1,37 +1,27 @@
 package com.example.jokeapp
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.jokeapp.fragments.AddJokeFragment
+import androidx.lifecycle.viewModelScope
+import com.example.jokeapp.network.ApiClient
+
 import data.Joke
-import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivityViewModel : ViewModel() {
 
-    // Изменим MutableLiveData на LiveData для правильного типа
     private val _jokes = MutableLiveData<List<Joke>>(emptyList())
     val jokes: LiveData<List<Joke>> get() = _jokes
+
+    private var currentPage = 1
+
+    var isLoading = false
+
     init {
-        loadInitialJokes()
-
-    }
-
-    private fun loadInitialJokes() {
-        viewModelScope.launch {
-            val initialJokes = withContext(Dispatchers.IO) {
-                listOf(
-                    Joke("1", "Category1", "Why did the chicken cross the road?", "To get to the other side."),
-                    Joke("2", "Category2", "Why was the math book sad?", "Because it had too many problems.")
-                )
-            }
-            _jokes.value = initialJokes
-        }
+        loadJokesWithDelay()
     }
 
     // Метод для добавления шутки
@@ -59,11 +49,41 @@ class MainActivityViewModel : ViewModel() {
                 kotlinx.coroutines.delay(2000) // Задержка 2 секунды
             }
             val jokes = listOf(
-                Joke("3", "Category3", "What do you call a bear with no teeth?", "A gummy bear."),
-                Joke("4", "Category4", "Why can't your nose be 12 inches long?", "Because then it would be a foot.")
-            )
+                Joke(1, "Category3", "What do you call a bear with no teeth?", "A gummy bear.","user"),
+                Joke(2, "Category4", "Why can't your nose be 12 inches long?", "Because then it would be a foot.","user"),
+                )
             _jokes.value = jokes
         }
     }
-}
 
+    fun fetchJokesFromNetwork() {
+
+        if (isLoading) return // Предотвращаем повторный вызов, пока загружаются данные
+        isLoading = true
+
+        viewModelScope.launch {
+            val newJokes = withContext(Dispatchers.IO) {
+                try {
+                    val response = ApiClient.api.getJokes()
+                    response.jokes.map { joke ->
+                        Joke(
+                            id = joke.id,
+                            category = joke.category,
+                            question = joke.setup,
+                            answer = joke.delivery,
+                            source = "network"
+                        )
+                    }
+                } catch (e: Exception) {
+                    emptyList<Joke>()
+                }
+            }
+            val currentList = _jokes.value.orEmpty().toMutableList()
+            currentList.addAll(newJokes)
+            _jokes.value = currentList
+
+            isLoading = false
+            currentPage++
+        }
+    }
+}

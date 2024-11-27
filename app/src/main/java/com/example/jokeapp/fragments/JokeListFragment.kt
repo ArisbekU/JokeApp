@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.jokeapp.MainActivity
 import com.example.jokeapp.MainActivityViewModel
 import com.example.jokeapp.R
@@ -68,32 +69,44 @@ class JokeListFragment : Fragment() {
             }
         }
 
-
-
-        //viewModel.loadJokesWithDelay(
-        //    onLoading = {
-        //        _binding?.progressBar?.visibility = View.VISIBLE
-        //    },
-        //    onLoaded = {
-        //        _binding?.progressBar?.visibility = View.GONE
-        //    }
-        //)
-
         viewModel.jokes.observe(viewLifecycleOwner) { jokes ->
             binding.progressBar.visibility = View.GONE
             if (jokes.isEmpty()) {
                 binding.emptyTextView.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.GONE
             } else {
                 binding.emptyTextView.visibility = View.GONE
+                binding.progressBar.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
             }
             adapter.submitList(jokes)
         }
+
+        //viewModel.fetchJokesFromNetwork() // Загружаем шутки из сети
+
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val totalItemCount = layoutManager.itemCount
+                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+
+                // Если пользователь дошёл до конца списка, подгружаем новые шутки
+                if (!viewModel.isLoading && lastVisibleItemPosition + 1 >= totalItemCount) {
+                    viewModel.fetchJokesFromNetwork() // Загружаем новые шутки
+                }
+            }
+        })
+
         binding.emptyTextView.setOnClickListener {
             val addJokeFragment = AddJokeFragment()
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, addJokeFragment)
                 .commit()
         }
+
         // Обработка клика по кнопке AddJoke
         binding.addJokeButton.setOnClickListener {
             // Открываем фрагмент добавления шутки
@@ -103,6 +116,7 @@ class JokeListFragment : Fragment() {
                 .addToBackStack(null)
                 .commit()
         }
+
     }
 
     override fun onDestroyView() {

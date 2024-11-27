@@ -9,7 +9,7 @@ class JokeDetailPresenter(private val view: JokeDetailView){
         if (category.isNullOrBlank() || question.isNullOrBlank() || answer.isNullOrBlank()) {
             view.showError("Invalid joke data")
         } else {
-            val joke = Joke(UUID.randomUUID().toString(), category, question, answer)
+            val joke = Joke(1, category, question, answer,"user")
             view.showJokeDetails(joke)
         }
     }
