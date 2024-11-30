@@ -49,7 +49,7 @@ class AddJokeFragment : Fragment() {
                 )
 
                 // Добавляем шутку в ViewModel
-                viewModel.addJoke(joke)
+                viewModel.addUserJoke(joke)
 
                 // Показываем сообщение об успешном добавлении
                 Toast.makeText(requireContext(), "Joke added!", Toast.LENGTH_SHORT).show()

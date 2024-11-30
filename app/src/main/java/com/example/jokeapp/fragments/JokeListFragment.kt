@@ -1,14 +1,20 @@
 package com.example.jokeapp.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.jokeapp.JokeDatabase
 import com.example.jokeapp.MainActivity
 import com.example.jokeapp.MainActivityViewModel
 import com.example.jokeapp.R
@@ -58,33 +64,34 @@ class JokeListFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
 
         viewModel.jokes.observe(viewLifecycleOwner) { jokes ->
-            _binding?.let { binding ->
-                binding.progressBar.visibility = View.GONE
-                if (jokes.isEmpty()) {
-                    binding.emptyTextView.visibility = View.VISIBLE
-                } else {
-                    binding.emptyTextView.visibility = View.GONE
-                }
+            binding.progressBar.visibility = View.GONE
+            if (jokes.isEmpty()) {
+                binding.emptyTextView.text = "Проблемы с интернетом. Добавитье свою"
+                binding.emptyTextView.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.GONE
+            } else {
+                binding.emptyTextView.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
                 adapter.submitList(jokes)
             }
         }
 
-        viewModel.jokes.observe(viewLifecycleOwner) { jokes ->
-            binding.progressBar.visibility = View.GONE
-            if (jokes.isEmpty()) {
-                binding.emptyTextView.visibility = View.VISIBLE
-                binding.progressBar.visibility = View.VISIBLE
-                binding.recyclerView.visibility = View.GONE
-            } else {
-                binding.emptyTextView.visibility = View.GONE
-                binding.progressBar.visibility = View.GONE
-                binding.recyclerView.visibility = View.VISIBLE
+        // Наблюдаем за сообщениями об ошибках
+        viewModel.errorMessage.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+                viewModel.clearErrorMessage()
             }
-            adapter.submitList(jokes)
         }
 
-        //viewModel.fetchJokesFromNetwork() // Загружаем шутки из сети
+        // Проверяем интернет и загружаем данные
+        if (isNetworkAvailable(requireContext())) {
+            viewModel.fetchJokesFromNetwork()
+        } else {
+            viewModel.handleError()// Вызываем обработку ошибки напряму
+        }
 
+        // скролл для шуток
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -123,5 +130,14 @@ class JokeListFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-}
 
+    // Функция проверки наличия интернета
+    @SuppressLint("ServiceCast")
+    private fun isNetworkAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        return capabilities != null &&
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+}

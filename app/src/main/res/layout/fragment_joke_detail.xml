@@ -9,6 +9,8 @@
         android:id="@+id/categoryDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:textSize="16sp"
@@ -20,7 +22,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
         android:textColor="@android:color/black"
         tools:text="Question" />
 
@@ -28,6 +31,8 @@
         android:id="@+id/answerDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
         tools:text="Answer"
         android:textSize="14sp"
         android:textColor="@android:color/darker_gray"/>
