@@ -30,22 +30,32 @@ class AddJokeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.addJokeButton.setOnClickListener {
+            // Получаем введенные данные
             val category = binding.categoryInput.text.toString().trim()
             val question = binding.questionInput.text.toString().trim()
             val answer = binding.answerInput.text.toString().trim()
 
+            // Проверяем, что все поля заполнены
             if (category.isEmpty() || question.isEmpty() || answer.isEmpty()) {
                 Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
             } else {
+                // Создаем объект Joke
                 val joke = Joke(
-                    id = viewModel.getNextJokeId().toString(),
+                    id = viewModel.getNextJokeId(),
                     category = category,
                     question = question,
-                    answer = answer
+                    answer = answer,
+                    source = "user"  // Указываем источник, например, "user"
                 )
+
+                // Добавляем шутку в ViewModel
                 viewModel.addJoke(joke)
+
+                // Показываем сообщение об успешном добавлении
                 Toast.makeText(requireContext(), "Joke added!", Toast.LENGTH_SHORT).show()
-                parentFragmentManager.popBackStack() // Вернуться к предыдущему фрагменту
+
+                // Возвращаемся на предыдущий экран
+                parentFragmentManager.popBackStack()
             }
         }
     }
@@ -55,5 +65,6 @@ class AddJokeFragment : Fragment() {
         _binding = null
     }
 }
+
 
 
