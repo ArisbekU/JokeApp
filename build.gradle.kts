@@ -4,4 +4,5 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.navigation.safe.args) apply false
     kotlin("plugin.serialization") version "1.9.10"
+    id("com.google.devtools.ksp") version "1.9.10-1.0.13" apply false
 }

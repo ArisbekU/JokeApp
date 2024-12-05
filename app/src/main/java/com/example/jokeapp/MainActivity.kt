@@ -21,7 +21,13 @@ class MainActivity : AppCompatActivity(), JokeListFragment.JokeListListener {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
+
+        // Получите экземпляр базы данных
+        val database = JokeDatabase.getInstance(this)
+
+        // Используйте фабрику для создания ViewModel
+        val factory = MainActivityViewModelFactory(database)
+        viewModel = ViewModelProvider(this, factory).get(MainActivityViewModel::class.java)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
