@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.example.jokeapp.databinding.ItemJokeBinding
-import data.util.JokeDiffUtilCallback
+import data.JokeDiffUtilCallback
 
 
 class JokeAdapter(private val onClick: (Joke) -> Unit) :
