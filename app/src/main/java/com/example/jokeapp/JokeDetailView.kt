@@ -1,6 +1,6 @@
 package com.example.jokeapp
 
-import data.Joke
+import domain.model.Joke
 
 interface JokeDetailView {
     fun showJokeDetails(joke: Joke)

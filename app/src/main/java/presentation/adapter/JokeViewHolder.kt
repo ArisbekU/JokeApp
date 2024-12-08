@@ -1,8 +1,9 @@
-package data
+package presentation.adapter
 
 
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jokeapp.databinding.ItemJokeBinding
+import domain.model.Joke
 
 class JokeViewHolder(
     private val binding: ItemJokeBinding,

@@ -1,7 +1,8 @@
-package com.example.jokeapp
+package presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import data.database.JokeDatabase
 
 class MainActivityViewModelFactory(
     private val database: JokeDatabase

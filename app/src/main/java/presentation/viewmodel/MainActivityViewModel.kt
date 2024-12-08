@@ -1,12 +1,15 @@
-package com.example.jokeapp
+package presentation.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jokeapp.network.ApiClient
+import data.database.CachedJokeEntity
+import data.database.JokeDatabase
+import data.database.UserJokeEntity
 
-import data.Joke
+import domain.model.Joke
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

@@ -1,7 +1,7 @@
-package data.util
+package presentation.adapter
 
 import androidx.recyclerview.widget.DiffUtil
-import data.Joke
+import domain.model.Joke
 
 
 

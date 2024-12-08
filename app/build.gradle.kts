@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.ui.desktop)
+    implementation(libs.androidx.room.common)
 
 
     testImplementation(libs.junit)

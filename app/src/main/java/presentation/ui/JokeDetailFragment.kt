@@ -1,4 +1,4 @@
-package com.example.jokeapp.fragments
+package presentation.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.jokeapp.databinding.FragmentJokeDetailBinding
-import data.Joke
+import domain.model.Joke
 
 class JokeDetailFragment : Fragment() {
 

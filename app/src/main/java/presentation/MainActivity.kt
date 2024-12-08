@@ -1,14 +1,16 @@
-package com.example.jokeapp
+package presentation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import presentation.viewmodel.MainActivityViewModel
+import presentation.viewmodel.MainActivityViewModelFactory
+import com.example.jokeapp.R
 import com.example.jokeapp.databinding.ActivityMainBinding
-import com.example.jokeapp.fragments.AddJokeFragment
-import com.example.jokeapp.fragments.JokeListFragment
-import com.example.jokeapp.fragments.JokeDetailFragment
-import data.Joke
+import presentation.ui.JokeListFragment
+import presentation.ui.JokeDetailFragment
+import data.database.JokeDatabase
+import domain.model.Joke
 
 
 

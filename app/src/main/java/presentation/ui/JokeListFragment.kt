@@ -1,4 +1,4 @@
-package com.example.jokeapp.fragments
+package presentation.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,16 +11,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.jokeapp.JokeDatabase
-import com.example.jokeapp.MainActivity
-import com.example.jokeapp.MainActivityViewModel
+import presentation.viewmodel.MainActivityViewModel
 import com.example.jokeapp.R
 import com.example.jokeapp.databinding.FragmentJokeListBinding
-import data.Joke
-import data.JokeAdapter
+import domain.model.Joke
+import presentation.adapter.JokeAdapter
 
 class JokeListFragment : Fragment() {
 

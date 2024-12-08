@@ -1,9 +1,7 @@
-package com.example.jokeapp
+package data.database
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.Dao
-import data.Joke
 
 @Dao
 interface JokeDao {

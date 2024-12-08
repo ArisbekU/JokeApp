@@ -1,11 +1,11 @@
-package data
+package presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.example.jokeapp.R
 import com.example.jokeapp.databinding.ItemJokeBinding
-import data.util.JokeDiffUtilCallback
+import domain.model.Joke
 
 
 class JokeAdapter(private val onClick: (Joke) -> Unit) :

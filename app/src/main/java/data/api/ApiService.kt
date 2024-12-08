@@ -1,10 +1,8 @@
 package com.example.jokeapp.network
 
-import androidx.core.view.ContentInfoCompat.Source
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
-import kotlin.random.Random
 
 data class JokeResponse(
     val jokes: List<JokeNetwork>
