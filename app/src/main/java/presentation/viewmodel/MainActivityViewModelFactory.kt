@@ -2,15 +2,25 @@ package presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import data.database.JokeDatabase
+import domain.usecase.*
 
 class MainActivityViewModelFactory(
-    private val database: JokeDatabase
+    private val fetchJokesUseCase: FetchJokesUseCase,
+    private val saveCachedJokesUseCase: SaveCachedJokesUseCase,
+    private val getCachedJokesUseCase: GetCachedJokesUseCase,
+    private val addUserJokeUseCase: AddUserJokeUseCase,
+    private val getUserJokesFromDatabaseUseCase: GetUserJokesFromDatabaseUseCase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainActivityViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return MainActivityViewModel(database) as T
+            return MainActivityViewModel(
+                fetchJokesUseCase,
+                saveCachedJokesUseCase,
+                getCachedJokesUseCase,
+                addUserJokeUseCase,
+                getUserJokesFromDatabaseUseCase
+            ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

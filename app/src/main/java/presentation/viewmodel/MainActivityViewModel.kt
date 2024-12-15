@@ -1,20 +1,20 @@
 package presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.jokeapp.network.ApiClient
-import data.database.CachedJokeEntity
-import data.database.JokeDatabase
-import data.database.UserJokeEntity
-
+import android.util.Log
+import androidx.lifecycle.*
 import domain.model.Joke
+import domain.usecase.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainActivityViewModel(private val database: JokeDatabase) : ViewModel() {
+class MainActivityViewModel(
+    private val fetchJokesUseCase: FetchJokesUseCase,
+    private val saveCachedJokesUseCase: SaveCachedJokesUseCase,
+    private val getCachedJokesUseCase: GetCachedJokesUseCase,
+    private val addUserJokeUseCase: AddUserJokeUseCase,
+    private val getUserJokesFromDatabaseUseCase: GetUserJokesFromDatabaseUseCase // UseCase для получения пользовательских шуток
+) : ViewModel() {
 
     private val _jokes = MutableLiveData<List<Joke>>()
     val jokes: LiveData<List<Joke>> = _jokes
@@ -24,130 +24,112 @@ class MainActivityViewModel(private val database: JokeDatabase) : ViewModel() {
 
     var isLoading = false
 
-    // Загружаем шутки из базы данных
+    // Загружаем шутки из базы данных (пользовательские + кэшированные)
     private fun loadJokesFromDatabase() {
         viewModelScope.launch {
-            // Загружаем пользовательские шутки
-            val userJokes = withContext(Dispatchers.IO) { database.jokeDao.getAllUserJokes() }
-            // Загружаем кэшированные шутки
-            val cachedJokes = withContext(Dispatchers.IO) { database.jokeDao.getAllCachedJokes() }
+            try {
+                // Загружаем пользовательские шутки
+                val userJokes = withContext(Dispatchers.IO) {
+                    getUserJokesFromDatabaseUseCase.invoke() // Ваш use case для получения пользовательских шуток
+                }
 
-            // Объединяем два списка и конвертируем их в тип Joke
-            val allJokes = mutableListOf<Joke>()
+                // Загружаем кэшированные шутки за последние 24 часа
+                val jokesFromCache = withContext(Dispatchers.IO) {
+                    getCachedJokesUseCase.invoke(System.currentTimeMillis() - 24 * 60 * 60 * 1000) // За последние 24 часа
+                }
 
-            // Добавляем пользовательские шутки
-            allJokes.addAll(userJokes.map { joke ->
-                Joke(
-                    id = joke.id,
-                    category = joke.category,
-                    question = joke.question,
-                    answer = joke.answer,
-                    source = "user" // Источник: пользователь
-                )
-            })
+                // Объединяем два списка шуток
+                val allJokes = mutableListOf<Joke>()
 
-            // Добавляем кэшированные шутки
-            allJokes.addAll(cachedJokes.map { joke ->
-                Joke(
-                    id = joke.id,
-                    category = joke.category,
-                    question = joke.question,
-                    answer = joke.answer,
-                    source = "network" // Источник: сеть (кэш)
-                )
-            })
+                // Добавляем пользовательские шутки
+                allJokes.addAll(userJokes.map { joke ->
+                    Joke(
+                        id = joke.id,
+                        category = joke.category,
+                        question = joke.question,
+                        answer = joke.answer,
+                        source = "user" // Источник: пользователь
+                    )
+                })
 
-            // Обновляем LiveData
-            _jokes.value = allJokes
+                // Добавляем кэшированные шутки
+                allJokes.addAll(jokesFromCache.map { joke ->
+                    Joke(
+                        id = joke.id,
+                        category = joke.category,
+                        question = joke.question,
+                        answer = joke.answer,
+                        source = "network" // Источник: сеть (кэш)
+                    )
+                })
+
+                // Обновляем LiveData с объединенным списком шуток
+                _jokes.value = allJokes
+                Log.d("MainActivityViewModel", "Jokes loaded: ${allJokes.size}")
+
+            } catch (e: Exception) {
+                Log.e("MainActivityViewModel", "Error loading jokes", e)
+            }
         }
     }
 
+    // Получаем шутки из сети
     fun fetchJokesFromNetwork() {
         if (isLoading) return
         isLoading = true
+
         viewModelScope.launch {
             try {
-                // Получаем данные с API
-                val jokesFromNetwork = withContext(Dispatchers.IO) {
-                    val response = ApiClient.api.getJokes()
-                    // Преобразуем полученные шутки из API в CachedJokeEntity
-                    response.jokes.map { joke ->
-                        CachedJokeEntity(
-                            id = joke.id,
-                            category = joke.category,
-                            question = joke.setup,
-                            answer = joke.delivery,
-                            timestamp = System.currentTimeMillis() // Записываем время получения
-                        )
-                    }
-                }
+                val jokesFromNetwork = withContext(Dispatchers.IO) { fetchJokesUseCase() }
 
-                // Сохраняем шутки в таблицу временного кэша
-                withContext(Dispatchers.IO) {
-                    database.jokeDao.insertCachedJokes(jokesFromNetwork)
-                }
+                // Сохраняем шутки в кэш
+                withContext(Dispatchers.IO) { saveCachedJokesUseCase(jokesFromNetwork) }
 
-                // Загружаем обновленный список шуток из базы данных
                 loadJokesFromDatabase()
-
             } catch (e: Exception) {
-                // Логируем ошибку
                 e.printStackTrace()
+                _errorMessage.postValue("Ошибка загрузки. Проверьте подключение к интернету.")
             } finally {
                 isLoading = false
             }
         }
     }
 
-
-    // Удаление устаревших шуток
-    private fun clearOldJokes() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val expiryTime = System.currentTimeMillis() - 24 * 60 * 60 * 1000 // 24 часа
-            database.jokeDao.clearOldCachedJokes(expiryTime)
+    // Добавление пользовательской шутки
+    fun addUserJoke(joke: Joke) {
+        viewModelScope.launch {
+            try {
+                // Сохраняем шутку в базу данных
+                addUserJokeUseCase.invoke(joke)
+                Log.d("MainActivityViewModel", "Joke saved: $joke")
+                // Загружаем обновленные шутки из базы данных
+                loadJokesFromDatabase()
+            } catch (e: Exception) {
+                Log.e("MainActivityViewModel", "Error saving joke", e)
+            }
         }
     }
+
     // Метод для получения уникального ID для шутки
     fun getNextJokeId(): Int {
         return (_jokes.value?.size ?: 0) + 1
     }
-    // Инициализация
-    init {
-        loadJokesFromDatabase()
-        clearOldJokes()
-    }
-    // Добавление пользовательской шутки
-    fun addUserJoke(joke: Joke) {
-        viewModelScope.launch {
-            val newUserJoke = UserJokeEntity(
-                id = 0, // Автоматическая генерация ID
-                category = joke.category,
-                question = joke.question,
-                answer = joke.answer,
-                source = "user"
-            )
 
-            withContext(Dispatchers.IO) {
-                database.jokeDao.insertUserJoke(newUserJoke)
-            }
-
-            // Обновляем список шуток
-            loadJokesFromDatabase()
-        }
-    }
+    // Обработка ошибок загрузки
     fun handleError() {
         viewModelScope.launch {
-            val cachedJokes = withContext(Dispatchers.IO) { database.jokeDao.getAllCachedJokes() }
-            if (cachedJokes.isNotEmpty()) {
-                _errorMessage.postValue("Ошибка загрузки. Показаны шутки из кэша.")
-                loadJokesFromDatabase()
-            } else {
-                _errorMessage.postValue("Ошибка загрузки. Кэш пуст.")
-            }
+            loadJokesFromDatabase()
+            _errorMessage.postValue("Ошибка загрузки. Показаны шутки из кэша..")
         }
     }
+
+    // Очистка сообщения об ошибке
     fun clearErrorMessage() {
         _errorMessage.value = null
     }
-}
 
+    // Инициализация
+    init {
+        loadJokesFromDatabase()
+    }
+}

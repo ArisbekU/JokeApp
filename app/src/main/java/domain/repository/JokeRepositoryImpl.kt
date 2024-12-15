@@ -1,9 +1,9 @@
-package data.repisotory
+package data.repository
 
-import data.database.UserJokeEntity
 import com.example.jokeapp.network.JokeApiService
 import data.database.CachedJokeEntity
 import data.database.JokeDao
+import data.database.UserJokeEntity
 import domain.model.Joke
 import domain.repository.JokeRepository
 
@@ -11,6 +11,7 @@ class JokeRepositoryImpl(
     private val apiService: JokeApiService,
     private val jokeDao: JokeDao
 ) : JokeRepository {
+
     override suspend fun fetchJokesFromNetwork(): List<Joke> {
         val response = apiService.getJokes()
         return response.jokes?.map { joke ->
@@ -36,9 +37,11 @@ class JokeRepositoryImpl(
         jokeDao.insertUserJoke(entity)
     }
 
+    // Реализуем метод getUserJokes
     override suspend fun getUserJokes(): List<Joke> {
         return jokeDao.getAllUserJokes().map {
             Joke(it.id, it.category, it.question, it.answer, "user")
         }
     }
 }
+

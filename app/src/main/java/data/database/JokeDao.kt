@@ -31,5 +31,8 @@ interface JokeDao {
 
     @Query("DELETE FROM cached_jokes WHERE timestamp < :expiryTime")
     suspend fun clearOldCachedJokes(expiryTime: Long)
+
+    @Query("SELECT * FROM cached_jokes WHERE timestamp >= :expiryTime")
+    suspend fun getCachedJokesSince(expiryTime: Long): List<CachedJokeEntity>
 }
 

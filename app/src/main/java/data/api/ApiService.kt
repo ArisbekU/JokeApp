@@ -12,8 +12,7 @@ data class JokeNetwork(
     val id: Int,
     val category: String,
     val setup: String,
-    val delivery: String,
-    val source: String,
+    val delivery: String
 )
 
 object ApiClient {

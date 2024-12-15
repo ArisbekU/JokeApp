@@ -81,12 +81,7 @@ class JokeListFragment : Fragment() {
             }
         }
 
-        // Проверяем интернет и загружаем данные
-        if (isNetworkAvailable(requireContext())) {
-            viewModel.fetchJokesFromNetwork()
-        } else {
-            viewModel.handleError()// Вызываем обработку ошибки напряму
-        }
+
 
         // скролл для шуток
         binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -94,12 +89,16 @@ class JokeListFragment : Fragment() {
                 super.onScrolled(recyclerView, dx, dy)
 
                 val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val visibleItemCount = layoutManager.childCount
                 val totalItemCount = layoutManager.itemCount
-                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
-                // Если пользователь дошёл до конца списка, подгружаем новые шутки
-                if (!viewModel.isLoading && lastVisibleItemPosition + 1 >= totalItemCount) {
-                    viewModel.fetchJokesFromNetwork() // Загружаем новые шутки
+                if (visibleItemCount + firstVisibleItemPosition >= totalItemCount &&
+                    firstVisibleItemPosition >= 0) {
+                    viewModel.fetchJokesFromNetwork()
+                }
+                else if (!isNetworkAvailable(requireContext())) {
+                    viewModel.handleError()
                 }
             }
         })

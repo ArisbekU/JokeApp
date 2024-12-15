@@ -18,3 +18,10 @@ class GetCachedJokesUseCase(private val repository: JokeRepository) {
 class AddUserJokeUseCase(private val repository: JokeRepository) {
     suspend operator fun invoke(joke: Joke) = repository.addUserJoke(joke)
 }
+class GetUserJokesFromDatabaseUseCase(private val jokeRepository: JokeRepository) {
+
+    // Метод для получения всех пользовательских шуток из базы данных
+    suspend operator fun invoke(): List<Joke> {
+        return jokeRepository.getUserJokes()
+    }
+}
