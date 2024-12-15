@@ -7,8 +7,9 @@ import domain.usecase.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class MainActivityViewModel(
+class MainActivityViewModel @Inject constructor (
     private val fetchJokesUseCase: FetchJokesUseCase,
     private val saveCachedJokesUseCase: SaveCachedJokesUseCase,
     private val getCachedJokesUseCase: GetCachedJokesUseCase,

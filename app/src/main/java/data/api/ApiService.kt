@@ -16,7 +16,7 @@ data class JokeNetwork(
 )
 
 object ApiClient {
-    private const val BASE_URL = "https://v2.jokeapi.dev/"
+    internal const val BASE_URL = "https://v2.jokeapi.dev/"
 
     val api: JokeApiService by lazy {
         Retrofit.Builder()

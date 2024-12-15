@@ -6,8 +6,9 @@ import data.database.JokeDao
 import data.database.UserJokeEntity
 import domain.model.Joke
 import domain.repository.JokeRepository
+import javax.inject.Inject
 
-class JokeRepositoryImpl(
+class JokeRepositoryImpl @Inject constructor(
     private val apiService: JokeApiService,
     private val jokeDao: JokeDao
 ) : JokeRepository {

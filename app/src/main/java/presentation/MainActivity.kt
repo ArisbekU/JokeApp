@@ -13,11 +13,22 @@ import data.database.JokeDatabase
 import domain.model.Joke
 import domain.usecase.*
 import presentation.ui.JokeDetailFragment
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), JokeListFragment.JokeListListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainActivityViewModel
+    @Inject
+    lateinit var fetchJokesUseCase: FetchJokesUseCase
+    @Inject
+    lateinit var saveCachedJokesUseCase: SaveCachedJokesUseCase
+    @Inject
+    lateinit var getCachedJokesUseCase: GetCachedJokesUseCase
+    @Inject
+    lateinit var addUserJokeUseCase: AddUserJokeUseCase
+    @Inject
+    lateinit var getUserJokesFromDatabaseUseCase: GetUserJokesFromDatabaseUseCase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
